@@ -12,7 +12,7 @@ final public class SafeContextListener implements ServletContextListener {
 
     public void contextInitialized(final ServletContextEvent sce) {
         ServletContext context = sce.getServletContext();
-        context.setAttribute("safe", new SafeMap());
+        context.setAttribute("safe", new SafeSanitizer());
     }
 
     public void contextDestroyed(final ServletContextEvent sce) {

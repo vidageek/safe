@@ -8,7 +8,7 @@ import java.util.Set;
  * @author jonasabreu
  * 
  */
-final public class SafeMap implements Map<Object, Object> {
+final public class SafeSanitizer implements Map<Object, Object> {
 
     public Object get(final Object key) {
         return "It work's! " + key.toString();
