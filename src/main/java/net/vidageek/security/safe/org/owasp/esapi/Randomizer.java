@@ -16,11 +16,6 @@
 package net.vidageek.security.safe.org.owasp.esapi;
 
 import java.security.SecureRandom;
-import java.util.UUID;
-
-import net.vidageek.security.safe.org.owasp.esapi.util.EncoderConstants;
-
-import org.apache.log4j.Logger;
 
 /**
  * Reference implementation of the Randomizer interface. This implementation
@@ -36,11 +31,6 @@ public class Randomizer {
 
 	private final SecureRandom secureRandom = new SecureRandom();
 
-	private final Logger logger = Logger.getLogger(Randomizer.class);
-
-	/**
-	 * {@inheritDoc}
-	 */
 	public String getRandomString(final int length, final char[] characterSet) {
 		StringBuilder sb = new StringBuilder();
 		for (int loop = 0; loop < length; loop++) {
@@ -51,58 +41,8 @@ public class Randomizer {
 		return nonce;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public boolean getRandomBoolean() {
-		return secureRandom.nextBoolean();
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
 	public int getRandomInteger(final int min, final int max) {
 		return secureRandom.nextInt(max - min) + min;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public long getRandomLong() {
-		return secureRandom.nextLong();
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public float getRandomReal(final float min, final float max) {
-		float factor = max - min;
-		return secureRandom.nextFloat() * factor + min;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public String getRandomFilename(final String extension) {
-		String fn = getRandomString(12, EncoderConstants.CHAR_ALPHANUMERICS) + "." + extension;
-		logger.debug("Generated new random filename: " + fn);
-		return fn;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public String getRandomGUID() throws EncryptionException {
-		return UUID.randomUUID().toString();
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public byte[] getRandomBytes(final int n) {
-		byte[] result = new byte[n];
-		secureRandom.nextBytes(result);
-		return result;
 	}
 
 }
