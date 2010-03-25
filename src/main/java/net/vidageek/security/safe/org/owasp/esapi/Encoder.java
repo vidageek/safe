@@ -68,9 +68,6 @@ public class Encoder {
 	private final static char[] IMMUNE_XMLATTR = { ',', '.', '-', '_' };
 	private final static char[] IMMUNE_XPATH = { ',', '.', '-', '_', ' ' };
 
-	/**
-	 * Instantiates a new DefaultEncoder
-	 */
 	public Encoder() {
 		List<Codec> codecs = new ArrayList<Codec>();
 		codecs.add(htmlCodec);
@@ -83,9 +80,6 @@ public class Encoder {
 		this.codecs = Arrays.asList(codecs);
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	public String canonicalize(final String input) {
 		if (input == null) {
 			return null;
@@ -93,9 +87,6 @@ public class Encoder {
 		return canonicalize(input, true);
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	public String canonicalize(final String input, final boolean strict) {
 		if (input == null) {
 			return null;
@@ -154,9 +145,6 @@ public class Encoder {
 		return working;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	public String encodeForHTML(final String input) {
 		if (input == null) {
 			return null;
@@ -164,9 +152,6 @@ public class Encoder {
 		return htmlCodec.encode(IMMUNE_HTML, input);
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	public String decodeForHTML(final String input) {
 
 		if (input == null) {
@@ -175,9 +160,6 @@ public class Encoder {
 		return htmlCodec.decode(input);
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	public String encodeForHTMLAttribute(final String input) {
 		if (input == null) {
 			return null;
@@ -185,9 +167,6 @@ public class Encoder {
 		return htmlCodec.encode(IMMUNE_HTMLATTR, input);
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	public String encodeForCSS(final String input) {
 		if (input == null) {
 			return null;
@@ -195,9 +174,6 @@ public class Encoder {
 		return cssCodec.encode(IMMUNE_CSS, input);
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	public String encodeForJavaScript(final String input) {
 		if (input == null) {
 			return null;
@@ -205,9 +181,6 @@ public class Encoder {
 		return javaScriptCodec.encode(IMMUNE_JAVASCRIPT, input);
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	public String encodeForVBScript(final String input) {
 		if (input == null) {
 			return null;
@@ -215,9 +188,6 @@ public class Encoder {
 		return vbScriptCodec.encode(IMMUNE_VBSCRIPT, input);
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	public String encodeForXPath(final String input) {
 		if (input == null) {
 			return null;
@@ -225,9 +195,6 @@ public class Encoder {
 		return htmlCodec.encode(IMMUNE_XPATH, input);
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	public String encodeForXML(final String input) {
 		if (input == null) {
 			return null;
@@ -235,9 +202,6 @@ public class Encoder {
 		return xmlCodec.encode(IMMUNE_XML, input);
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	public String encodeForXMLAttribute(final String input) {
 		if (input == null) {
 			return null;
@@ -245,9 +209,6 @@ public class Encoder {
 		return xmlCodec.encode(IMMUNE_XMLATTR, input);
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	public String encodeForURL(final String input) throws EncodingException {
 		if (input == null) {
 			return null;
@@ -261,9 +222,6 @@ public class Encoder {
 		}
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	public String decodeFromURL(final String input) throws EncodingException {
 		if (input == null) {
 			return null;
