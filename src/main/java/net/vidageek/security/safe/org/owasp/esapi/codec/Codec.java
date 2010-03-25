@@ -15,6 +15,8 @@
  */
 package net.vidageek.security.safe.org.owasp.esapi.codec;
 
+import net.vidageek.security.safe.org.owasp.esapi.util.PushbackString;
+
 
 /**
  * The Codec interface defines a set of methods for encoding and decoding application level encoding schemes,

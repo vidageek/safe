@@ -22,8 +22,8 @@ import net.vidageek.security.safe.org.owasp.esapi.codec.CSSCodec;
 import net.vidageek.security.safe.org.owasp.esapi.codec.HTMLEntityCodec;
 import net.vidageek.security.safe.org.owasp.esapi.codec.JavaScriptCodec;
 import net.vidageek.security.safe.org.owasp.esapi.codec.PercentCodec;
-import net.vidageek.security.safe.org.owasp.esapi.codec.PushbackString;
 import net.vidageek.security.safe.org.owasp.esapi.codec.VBScriptCodec;
+import net.vidageek.security.safe.org.owasp.esapi.util.PushbackString;
 
 /**
  * @author Jeff Williams (jeff.williams .at. aspectsecurity.com) <a

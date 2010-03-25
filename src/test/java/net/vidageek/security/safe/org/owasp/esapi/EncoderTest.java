@@ -20,6 +20,10 @@ import java.util.ArrayList;
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
+import net.vidageek.security.safe.org.owasp.esapi.codec.CSSCodec;
+import net.vidageek.security.safe.org.owasp.esapi.codec.HTMLEntityCodec;
+import net.vidageek.security.safe.org.owasp.esapi.codec.JavaScriptCodec;
+import net.vidageek.security.safe.org.owasp.esapi.codec.PercentCodec;
 import net.vidageek.security.safe.org.owasp.esapi.util.EncoderConstants;
 
 /**
@@ -77,10 +81,7 @@ public class EncoderTest extends TestCase {
 	public void testCanonicalize() throws EncodingException {
 		System.out.println("canonicalize");
 
-		ArrayList<String> list = new ArrayList<String>();
-		list.add("HTMLEntityCodec");
-		list.add("PercentCodec");
-		DefaultEncoder instance = new DefaultEncoder(list);
+		Encoder instance = new Encoder(new HTMLEntityCodec(), new PercentCodec());
 
 		// Test null paths
 		assertEquals(null, instance.canonicalize(null));
@@ -195,7 +196,7 @@ public class EncoderTest extends TestCase {
 		// javascript escape syntax
 		ArrayList<String> js = new ArrayList<String>();
 		js.add("JavaScriptCodec");
-		instance = new DefaultEncoder(js);
+		instance = new Encoder(new JavaScriptCodec());
 		System.out.println("JavaScript Decoding");
 
 		assertEquals("\0", instance.canonicalize("\\0"));
@@ -221,9 +222,7 @@ public class EncoderTest extends TestCase {
 
 		// css escape syntax
 		// be careful because some codecs see \0 as null byte
-		ArrayList<String> css = new ArrayList<String>();
-		css.add("CSSCodec");
-		instance = new DefaultEncoder(css);
+		instance = new Encoder(new CSSCodec());
 		System.out.println("CSS Decoding");
 		assertEquals("<", instance.canonicalize("\\3c")); // add strings to
 		// prevent null byte
@@ -245,7 +244,7 @@ public class EncoderTest extends TestCase {
 	 */
 	public void testDoubleEncodingCanonicalization() throws EncodingException {
 		System.out.println("doubleEncodingCanonicalization");
-		Encoder instance = new DefaultEncoder();
+		Encoder instance = new Encoder();
 
 		// note these examples use the strict=false flag on canonicalize to
 		// allow
@@ -349,7 +348,7 @@ public class EncoderTest extends TestCase {
 	 */
 	public void testEncodeForHTML() throws Exception {
 		System.out.println("encodeForHTML");
-		Encoder instance = new DefaultEncoder();
+		Encoder instance = new Encoder();
 		assertEquals(null, instance.encodeForHTML(null));
 		// test invalid characters are replaced with spaces
 		assertEquals("a b c d e f&#x9;g", instance.encodeForHTML("a" + (char) 0 + "b" + (char) 4 + "c" + (char) 128
@@ -372,7 +371,7 @@ public class EncoderTest extends TestCase {
 	 */
 	public void testEncodeForHTMLAttribute() {
 		System.out.println("encodeForHTMLAttribute");
-		Encoder instance = new DefaultEncoder();
+		Encoder instance = new Encoder();
 		assertEquals(null, instance.encodeForHTMLAttribute(null));
 		assertEquals("&lt;script&gt;", instance.encodeForHTMLAttribute("<script>"));
 		assertEquals(",.-_", instance.encodeForHTMLAttribute(",.-_"));
@@ -385,7 +384,7 @@ public class EncoderTest extends TestCase {
      */
 	public void testEncodeForCSS() {
 		System.out.println("encodeForCSS");
-		Encoder instance = new DefaultEncoder();
+		Encoder instance = new Encoder();
 		assertEquals(null, instance.encodeForCSS(null));
 		assertEquals("\\3c script\\3e ", instance.encodeForCSS("<script>"));
 		assertEquals("\\21 \\40 \\24 \\25 \\28 \\29 \\3d \\2b \\7b \\7d \\5b \\5d ", instance
@@ -397,7 +396,7 @@ public class EncoderTest extends TestCase {
 	 */
 	public void testEncodeForJavascript() {
 		System.out.println("encodeForJavascript");
-		Encoder instance = new DefaultEncoder();
+		Encoder instance = new Encoder();
 		assertEquals(null, instance.encodeForJavaScript(null));
 		assertEquals("\\x3Cscript\\x3E", instance.encodeForJavaScript("<script>"));
 		assertEquals(",.\\x2D_\\x20", instance.encodeForJavaScript(",.-_ "));
@@ -420,7 +419,7 @@ public class EncoderTest extends TestCase {
      */
 	public void testEncodeForVBScript() {
 		System.out.println("encodeForVBScript");
-		Encoder instance = new DefaultEncoder();
+		Encoder instance = new Encoder();
 		assertEquals(null, instance.encodeForVBScript(null));
 		assertEquals("chrw(60)&\"script\"&chrw(62)", instance.encodeForVBScript("<script>"));
 		assertEquals(
@@ -438,72 +437,72 @@ public class EncoderTest extends TestCase {
 	 */
 	public void testEncodeForXPath() {
 		System.out.println("encodeForXPath");
-		Encoder instance = new DefaultEncoder();
+		Encoder instance = new Encoder();
 		assertEquals(null, instance.encodeForXPath(null));
 		assertEquals("&#x27;or 1&#x3d;1", instance.encodeForXPath("'or 1=1"));
 	}
 
 	public void testEncodeForXMLNull() {
-		Encoder instance = new DefaultEncoder();
+		Encoder instance = new Encoder();
 		assertEquals(null, instance.encodeForXML(null));
 	}
 
 	public void testEncodeForXMLSpace() {
-		Encoder instance = new DefaultEncoder();
+		Encoder instance = new Encoder();
 		assertEquals(" ", instance.encodeForXML(" "));
 	}
 
 	public void testEncodeForXMLScript() {
-		Encoder instance = new DefaultEncoder();
+		Encoder instance = new Encoder();
 		assertEquals("&#x3c;script&#x3e;", instance.encodeForXML("<script>"));
 	}
 
 	public void testEncodeForXMLImmune() {
 		System.out.println("encodeForXML");
-		Encoder instance = new DefaultEncoder();
+		Encoder instance = new Encoder();
 		assertEquals(",.-_", instance.encodeForXML(",.-_"));
 	}
 
 	public void testEncodeForXMLSymbol() {
-		Encoder instance = new DefaultEncoder();
+		Encoder instance = new Encoder();
 		assertEquals("&#x21;&#x40;&#x24;&#x25;&#x28;&#x29;&#x3d;&#x2b;&#x7b;&#x7d;&#x5b;&#x5d;", instance
 				.encodeForXML("!@$%()=+{}[]"));
 	}
 
 	public void testEncodeForXMLPound() {
 		System.out.println("encodeForXML");
-		Encoder instance = new DefaultEncoder();
+		Encoder instance = new Encoder();
 		assertEquals("&#xa3;", instance.encodeForXML("\u00A3"));
 	}
 
 	public void testEncodeForXMLAttributeNull() {
-		Encoder instance = new DefaultEncoder();
+		Encoder instance = new Encoder();
 		assertEquals(null, instance.encodeForXMLAttribute(null));
 	}
 
 	public void testEncodeForXMLAttributeSpace() {
-		Encoder instance = new DefaultEncoder();
+		Encoder instance = new Encoder();
 		assertEquals(" ", instance.encodeForXMLAttribute(" "));
 	}
 
 	public void testEncodeForXMLAttributeScript() {
-		Encoder instance = new DefaultEncoder();
+		Encoder instance = new Encoder();
 		assertEquals("&#x3c;script&#x3e;", instance.encodeForXMLAttribute("<script>"));
 	}
 
 	public void testEncodeForXMLAttributeImmune() {
-		Encoder instance = new DefaultEncoder();
+		Encoder instance = new Encoder();
 		assertEquals(",.-_", instance.encodeForXMLAttribute(",.-_"));
 	}
 
 	public void testEncodeForXMLAttributeSymbol() {
-		Encoder instance = new DefaultEncoder();
+		Encoder instance = new Encoder();
 		assertEquals(" &#x21;&#x40;&#x24;&#x25;&#x28;&#x29;&#x3d;&#x2b;&#x7b;&#x7d;&#x5b;&#x5d;", instance
 				.encodeForXMLAttribute(" !@$%()=+{}[]"));
 	}
 
 	public void testEncodeForXMLAttributePound() {
-		Encoder instance = new DefaultEncoder();
+		Encoder instance = new Encoder();
 		assertEquals("&#xa3;", instance.encodeForXMLAttribute("\u00A3"));
 	}
 
@@ -514,7 +513,7 @@ public class EncoderTest extends TestCase {
 	 */
 	public void testEncodeForURL() throws Exception {
 		System.out.println("encodeForURL");
-		Encoder instance = new DefaultEncoder();
+		Encoder instance = new Encoder();
 		assertEquals(null, instance.encodeForURL(null));
 		assertEquals("%3Cscript%3E", instance.encodeForURL("<script>"));
 	}
@@ -526,7 +525,7 @@ public class EncoderTest extends TestCase {
 	 */
 	public void testDecodeFromURL() throws Exception {
 		System.out.println("decodeFromURL");
-		Encoder instance = new DefaultEncoder();
+		Encoder instance = new Encoder();
 		try {
 			assertEquals(null, instance.decodeFromURL(null));
 			assertEquals("<script>", instance.decodeFromURL("%3Cscript%3E"));
@@ -544,7 +543,7 @@ public class EncoderTest extends TestCase {
 
 	public void testCanonicalizePerformance() throws Exception {
 		System.out.println("Canonicalization Performance");
-		Encoder encoder = new DefaultEncoder();
+		Encoder encoder = new Encoder();
 		int iterations = 100;
 		String normal = "The quick brown fox jumped over the lazy dog";
 
@@ -619,11 +618,11 @@ public class EncoderTest extends TestCase {
 
 		public void run() {
 			while (true) {
-				String nonce = new DefaultRandomizer().getRandomString(20, EncoderConstants.CHAR_SPECIALS);
+				String nonce = new Randomizer().getRandomString(20, EncoderConstants.CHAR_SPECIALS);
 				String result = javaScriptEncode(nonce);
 				// randomize the threads
 				try {
-					Thread.sleep(new DefaultRandomizer().getRandomInteger(100, 500));
+					Thread.sleep(new Randomizer().getRandomInteger(100, 500));
 				} catch (InterruptedException e) {
 					// just continue
 				}
@@ -632,7 +631,7 @@ public class EncoderTest extends TestCase {
 		}
 
 		public String javaScriptEncode(final String str) {
-			DefaultEncoder encoder = new DefaultEncoder();
+			Encoder encoder = new Encoder();
 			return encoder.encodeForJavaScript(str);
 		}
 	}

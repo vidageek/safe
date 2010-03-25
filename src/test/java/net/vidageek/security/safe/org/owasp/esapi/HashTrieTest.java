@@ -9,7 +9,7 @@ import java.util.Map.Entry;
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
-import net.vidageek.security.safe.org.owasp.esapi.codec.HashTrie;
+import net.vidageek.security.safe.org.owasp.esapi.util.HashTrie;
 
 public class HashTrieTest extends TestCase {
 	private static final Class<HashTrieTest> CLASS = HashTrieTest.class;

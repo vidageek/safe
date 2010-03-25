@@ -18,6 +18,9 @@ package net.vidageek.security.safe.org.owasp.esapi.codec;
 import java.util.HashMap;
 import java.util.Map;
 
+import net.vidageek.security.safe.org.owasp.esapi.util.HashTrie;
+import net.vidageek.security.safe.org.owasp.esapi.util.PushbackString;
+
 /**
  * Implementation of the Codec interface for HTML entity encoding.
  * 

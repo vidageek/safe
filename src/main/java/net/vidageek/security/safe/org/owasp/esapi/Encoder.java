@@ -15,338 +15,267 @@
  */
 package net.vidageek.security.safe.org.owasp.esapi;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.List;
+
+import net.vidageek.security.safe.org.owasp.esapi.codec.CSSCodec;
+import net.vidageek.security.safe.org.owasp.esapi.codec.Codec;
+import net.vidageek.security.safe.org.owasp.esapi.codec.HTMLEntityCodec;
+import net.vidageek.security.safe.org.owasp.esapi.codec.JavaScriptCodec;
+import net.vidageek.security.safe.org.owasp.esapi.codec.PercentCodec;
+import net.vidageek.security.safe.org.owasp.esapi.codec.VBScriptCodec;
+import net.vidageek.security.safe.org.owasp.esapi.codec.XMLEntityCodec;
+
+import org.apache.log4j.Logger;
+
 /**
- * The Encoder interface contains a number of methods for decoding input and
- * encoding output so that it will be safe for a variety of interpreters. To
- * prevent double-encoding, callers should make sure input does not already
- * contain encoded characters by calling canonicalize. Validator implementations
- * should call canonicalize on user input <b>before</b> validating to prevent
- * encoded attacks.
- * <P>
- * <img src="doc-files/Encoder.jpg">
- * <P>
- * All of the methods must use a "whitelist" or "positive" security model. For
- * the encoding methods, this means that all characters should be encoded,
- * except for a specific list of "immune" characters that are known to be safe.
- * <p>
- * The Encoder performs two key functions, encoding and decoding. These
- * functions rely on a set of codecs that can be found in the
- * org.owasp.esapi.codecs package. These include:
- * <ul>
- * <li>CSS Escaping</li>
- * <li>HTMLEntity Encoding</li>
- * <li>JavaScript Escaping</li>
- * <li>MySQL Escaping</li>
- * <li>Oracle Escaping</li>
- * <li>Percent Encoding (aka URL Encoding)</li>
- * <li>Unix Escaping</li>
- * <li>VBScript Escaping</li>
- * <li>Windows Encoding</li>
- * </ul>
- * <p>
+ * Reference implementation of the Encoder interface. This implementation takes
+ * a whitelist approach to encoding, meaning that everything not specifically
+ * identified in a list of "immune" characters is encoded.
  * 
  * @author Jeff Williams (jeff.williams .at. aspectsecurity.com) <a
  *         href="http://www.aspectsecurity.com">Aspect Security</a>
  * @since June 1, 2007
+ * @see org.owasp.esapi.Encoder
  */
-public interface Encoder {
+public class Encoder {
+
+	private final List<Codec> codecs;
+	private final HTMLEntityCodec htmlCodec = new HTMLEntityCodec();
+	private final XMLEntityCodec xmlCodec = new XMLEntityCodec();
+	private final PercentCodec percentCodec = new PercentCodec();
+	private final JavaScriptCodec javaScriptCodec = new JavaScriptCodec();
+	private final VBScriptCodec vbScriptCodec = new VBScriptCodec();
+	private final CSSCodec cssCodec = new CSSCodec();
+
+	private final Logger logger = Logger.getLogger(Encoder.class);
 
 	/**
-	 * This method is equivalent to calling
-	 * 
-	 * <pre>
-	 * Encoder.canonicalize(input, true);
-	 * </pre>
-	 * 
-	 * @see <a
-	 *      href="http://www.w3.org/TR/html4/interact/forms.html#h-17.13.4">W3C
-	 *      specifications</a>
-	 * 
-	 * @param input
-	 *            the text to canonicalize
-	 * @return a String containing the canonicalized text
+	 * Character sets that define characters (in addition to alphanumerics) that
+	 * are immune from encoding in various formats
 	 */
-	String canonicalize(String input);
+	private final static char[] IMMUNE_HTML = { ',', '.', '-', '_', ' ' };
+	private final static char[] IMMUNE_HTMLATTR = { ',', '.', '-', '_' };
+	private final static char[] IMMUNE_CSS = {};
+	private final static char[] IMMUNE_JAVASCRIPT = { ',', '.', '_' };
+	private final static char[] IMMUNE_VBSCRIPT = { ',', '.', '_' };
+	private final static char[] IMMUNE_XML = { ',', '.', '-', '_', ' ' };
+	private final static char[] IMMUNE_XMLATTR = { ',', '.', '-', '_' };
+	private final static char[] IMMUNE_XPATH = { ',', '.', '-', '_', ' ' };
 
 	/**
-	 * Canonicalization is simply the operation of reducing a possibly encoded
-	 * string down to its simplest form. This is important, because attackers
-	 * frequently use encoding to change their input in a way that will bypass
-	 * validation filters, but still be interpreted properly by the target of
-	 * the attack. Note that data encoded more than once is not something that a
-	 * normal user would generate and should be regarded as an attack.
-	 * <p>
-	 * Everyone <a
-	 * href="http://cwe.mitre.org/data/definitions/180.html">says</a> you
-	 * shouldn't do validation without canonicalizing the data first. This is
-	 * easier said than done. The canonicalize method can be used to simplify
-	 * just about any input down to its most basic form. Note that canonicalize
-	 * doesn't handle Unicode issues, it focuses on higher level encoding and
-	 * escaping schemes. In addition to simple decoding, canonicalize also
-	 * handles:
-	 * <ul>
-	 * <li>Perverse but legal variants of escaping schemes</li>
-	 * <li>Multiple escaping (%2526 or &#x26;lt;)</li>
-	 * <li>Mixed escaping (%26lt;)</li>
-	 * <li>Nested escaping (%%316 or &%6ct;)</li>
-	 * <li>All combinations of multiple, mixed, and nested encoding/escaping
-	 * (%2&#x35;3c or &#x2526gt;)</li>
-	 * </ul>
-	 * <p>
-	 * Using canonicalize is simple. The default is just...
-	 * 
-	 * <pre>
-	 * String clean = ESAPI.encoder().canonicalize(request.getParameter(&quot;input&quot;));
-	 * </pre>
-	 * 
-	 * You need to decode untrusted data so that it's safe for ANY downstream
-	 * interpreter or decoder. For example, if your data goes into a Windows
-	 * command shell, then into a database, and then to a browser, you're going
-	 * to need to decode for all of those systems. You can build a custom
-	 * encoder to canonicalize for your application like this...
-	 * 
-	 * <pre>
-	 * ArrayList list = new ArrayList();
-	 * list.add(new WindowsCodec());
-	 * list.add(new MySQLCodec());
-	 * list.add(new PercentCodec());
-	 * Encoder encoder = new DefaultEncoder(list);
-	 * String clean = encoder.canonicalize(request.getParameter(&quot;input&quot;));
-	 * </pre>
-	 * 
-	 * In ESAPI, the Validator uses the canonicalize method before it does
-	 * validation. So all you need to do is to validate as normal and you'll be
-	 * protected against a host of encoded attacks.
-	 * 
-	 * <pre>
-	 * String input = request.getParameter(&quot;name&quot;);
-	 * String name = ESAPI.validator().isValidInput(&quot;test&quot;, input, &quot;FirstName&quot;, 20, false);
-	 * </pre>
-	 * 
-	 * However, the default canonicalize() method only decodes HTMLEntity,
-	 * percent (URL) encoding, and JavaScript encoding. If you'd like to use a
-	 * custom canonicalizer with your validator, that's pretty easy too.
-	 * 
-	 * <pre>
-	 *     ... setup custom encoder as above
-	 *     Validator validator = new DefaultValidator( encoder );
-	 *     String input = request.getParameter( "name" );
-	 *     String name = validator.isValidInput( "test", input, "name", 20, false);
-	 * </pre>
-	 * 
-	 * Although ESAPI is able to canonicalize multiple, mixed, or nested
-	 * encoding, it's safer to not accept this stuff in the first place. In
-	 * ESAPI, the default is "strict" mode that throws an IntrusionException if
-	 * it receives anything not single-encoded with a single scheme. Currently
-	 * this is not configurable in ESAPI.properties, but it probably should be.
-	 * Even if you disable "strict" mode, you'll still get warning messages in
-	 * the log about each multiple encoding and mixed encoding received.
-	 * 
-	 * <pre>
-	 * // disabling strict mode to allow mixed encoding
-	 * String url = ESAPI.encoder().canonicalize(request.getParameter(&quot;url&quot;), false);
-	 * </pre>
-	 * 
-	 * @see <a
-	 *      href="http://www.w3.org/TR/html4/interact/forms.html#h-17.13.4">W3C
-	 *      specifications</a>
-	 * 
-	 * @param input
-	 *            the text to canonicalize
-	 * @param strict
-	 *            true if checking for double encoding is desired, false
-	 *            otherwise
-	 * 
-	 * @return a String containing the canonicalized text
+	 * Instantiates a new DefaultEncoder
 	 */
-	String canonicalize(String input, boolean strict);
+	public Encoder() {
+		List<Codec> codecs = new ArrayList<Codec>();
+		codecs.add(htmlCodec);
+		codecs.add(percentCodec);
+		codecs.add(javaScriptCodec);
+		this.codecs = codecs;
+	}
+
+	public Encoder(final Codec... codecs) {
+		this.codecs = Arrays.asList(codecs);
+	}
 
 	/**
-	 * Encode data for use in Cascading Style Sheets (CSS) content.
-	 * 
-	 * @see <a
-	 *      href="http://www.w3.org/TR/CSS21/syndata.html#escaped-characters">CSS
-	 *      Syntax [w3.org]</a>
-	 * 
-	 * @param input
-	 *            the text to encode for CSS
-	 * 
-	 * @return input encoded for CSS
+	 * {@inheritDoc}
 	 */
-	String encodeForCSS(String input);
+	public String canonicalize(final String input) {
+		if (input == null) {
+			return null;
+		}
+		return canonicalize(input, true);
+	}
 
 	/**
-	 * Encode data for use in HTML using HTML entity encoding
-	 * <p>
-	 * Note that the following characters: 00-08, 0B-0C, 0E-1F, and 7F-9F
-	 * <p>
-	 * cannot be used in HTML.
-	 * 
-	 * @see <a
-	 *      href="http://en.wikipedia.org/wiki/Character_encodings_in_HTML">HTML
-	 *      Encodings [wikipedia.org]</a>
-	 * @see <a href="http://www.w3.org/TR/html4/sgml/sgmldecl.html">SGML
-	 *      Specification [w3.org]</a>
-	 * @see <a href="http://www.w3.org/TR/REC-xml/#charsets">XML Specification
-	 *      [w3.org]</a>
-	 * 
-	 * @param input
-	 *            the text to encode for HTML
-	 * 
-	 * @return input encoded for HTML
+	 * {@inheritDoc}
 	 */
-	String encodeForHTML(String input);
+	public String canonicalize(final String input, final boolean strict) {
+		if (input == null) {
+			return null;
+		}
+
+		String working = input;
+		Codec codecFound = null;
+		int mixedCount = 1;
+		int foundCount = 0;
+		boolean clean = false;
+		while (!clean) {
+			clean = true;
+
+			// try each codec and keep track of which ones work
+			Iterator<Codec> i = codecs.iterator();
+			while (i.hasNext()) {
+				Codec codec = i.next();
+				String old = working;
+				working = codec.decode(working);
+				if (!old.equals(working)) {
+					if ((codecFound != null) && (codecFound != codec)) {
+						mixedCount++;
+					}
+					codecFound = codec;
+					if (clean) {
+						foundCount++;
+					}
+					clean = false;
+				}
+			}
+		}
+
+		// do strict tests and handle if any mixed, multiple, nested encoding
+		// were found
+		if ((foundCount >= 2) && (mixedCount > 1)) {
+			if (strict) {
+				throw new IntrusionException("Multiple (" + foundCount + "x) and mixed encoding (" + mixedCount
+						+ "x) detected in " + input);
+			} else {
+				logger.warn("Multiple (" + foundCount + "x) and mixed encoding (" + mixedCount + "x) detected in "
+						+ input);
+			}
+		} else if (foundCount >= 2) {
+			if (strict) {
+				throw new IntrusionException("Multiple (" + foundCount + "x) encoding detected in " + input);
+			} else {
+				logger.warn("Multiple (" + foundCount + "x) encoding detected in " + input);
+			}
+		} else if (mixedCount > 1) {
+			if (strict) {
+				throw new IntrusionException("Mixed encoding (" + mixedCount + "x) detected in " + input);
+			} else {
+				logger.warn("Mixed encoding (" + mixedCount + "x) detected in " + input);
+			}
+		}
+		return working;
+	}
 
 	/**
-	 * Decodes HTML entities.
-	 * 
-	 * @param input
-	 *            the <code>String</code> to decode
-	 * @return the newly decoded <code>String</code>
+	 * {@inheritDoc}
 	 */
-	String decodeForHTML(String input);
+	public String encodeForHTML(final String input) {
+		if (input == null) {
+			return null;
+		}
+		return htmlCodec.encode(IMMUNE_HTML, input);
+	}
 
 	/**
-	 * Encode data for use in HTML attributes.
-	 * 
-	 * @param input
-	 *            the text to encode for an HTML attribute
-	 * 
-	 * @return input encoded for use as an HTML attribute
+	 * {@inheritDoc}
 	 */
-	String encodeForHTMLAttribute(String input);
+	public String decodeForHTML(final String input) {
+
+		if (input == null) {
+			return null;
+		}
+		return htmlCodec.decode(input);
+	}
 
 	/**
-	 * Encode data for insertion inside a data value in JavaScript. Putting user
-	 * data directly inside a script is quite dangerous. Great care must be
-	 * taken to prevent putting user data directly into script code itself, as
-	 * no amount of encoding will prevent attacks there.
-	 * 
-	 * @param input
-	 *            the text to encode for JavaScript
-	 * 
-	 * @return input encoded for use in JavaScript
+	 * {@inheritDoc}
 	 */
-	String encodeForJavaScript(String input);
+	public String encodeForHTMLAttribute(final String input) {
+		if (input == null) {
+			return null;
+		}
+		return htmlCodec.encode(IMMUNE_HTMLATTR, input);
+	}
 
 	/**
-	 * Encode data for insertion inside a data value in a Visual Basic script.
-	 * Putting user data directly inside a script is quite dangerous. Great care
-	 * must be taken to prevent putting user data directly into script code
-	 * itself, as no amount of encoding will prevent attacks there.
-	 * 
-	 * This method is not recommended as VBScript is only supported by Internet
-	 * Explorer
-	 * 
-	 * @param input
-	 *            the text to encode for VBScript
-	 * 
-	 * @return input encoded for use in VBScript
+	 * {@inheritDoc}
 	 */
-	String encodeForVBScript(String input);
+	public String encodeForCSS(final String input) {
+		if (input == null) {
+			return null;
+		}
+		return cssCodec.encode(IMMUNE_CSS, input);
+	}
 
 	/**
-	 * Encode data for use in an XPath query.
-	 * 
-	 * NB: The reference implementation encodes almost everything and may
-	 * over-encode.
-	 * 
-	 * The difficulty with XPath encoding is that XPath has no built in
-	 * mechanism for escaping characters. It is possible to use XQuery in a
-	 * parameterized way to prevent injection.
-	 * 
-	 * For more information, refer to <a href=
-	 * "http://www.ibm.com/developerworks/xml/library/x-xpathinjection.html"
-	 * >this article</a> which specifies the following list of characters as the
-	 * most dangerous:
-	 * ^&"*';<>(). <a href="http://www.packetstormsecurity.org/papers
-	 * /bypass/Blind_XPath_Injection_20040518.pdf" >This paper</a> suggests
-	 * disallowing ' and " in queries.
-	 * 
-	 * @see <a
-	 *      href="http://www.ibm.com/developerworks/xml/library/x-xpathinjection.html">XPath
-	 *      Injection [ibm.com]</a>
-	 * @see <a
-	 *      href="http://www.packetstormsecurity.org/papers/bypass/Blind_XPath_Injection_20040518.pdf">Blind
-	 *      XPath Injection [packetstormsecurity.org]</a>
-	 * 
-	 * @param input
-	 *            the text to encode for XPath
-	 * @return input encoded for use in XPath
+	 * {@inheritDoc}
 	 */
-	String encodeForXPath(String input);
+	public String encodeForJavaScript(final String input) {
+		if (input == null) {
+			return null;
+		}
+		return javaScriptCodec.encode(IMMUNE_JAVASCRIPT, input);
+	}
 
 	/**
-	 * Encode data for use in an XML element. The implementation should follow
-	 * the <a href="http://www.w3schools.com/xml/xml_encoding.asp">XML Encoding
-	 * Standard</a> from the W3C.
-	 * <p>
-	 * The use of a real XML parser is strongly encouraged. However, in the
-	 * hopefully rare case that you need to make sure that data is safe for
-	 * inclusion in an XML document and cannot use a parse, this method provides
-	 * a safe mechanism to do so.
-	 * 
-	 * @see <a href="http://www.w3schools.com/xml/xml_encoding.asp">XML Encoding
-	 *      Standard</a>
-	 * 
-	 * @param input
-	 *            the text to encode for XML
-	 * 
-	 * @return input encoded for use in XML
+	 * {@inheritDoc}
 	 */
-	String encodeForXML(String input);
+	public String encodeForVBScript(final String input) {
+		if (input == null) {
+			return null;
+		}
+		return vbScriptCodec.encode(IMMUNE_VBSCRIPT, input);
+	}
 
 	/**
-	 * Encode data for use in an XML attribute. The implementation should follow
-	 * the <a href="http://www.w3schools.com/xml/xml_encoding.asp">XML Encoding
-	 * Standard</a> from the W3C.
-	 * <p>
-	 * The use of a real XML parser is highly encouraged. However, in the
-	 * hopefully rare case that you need to make sure that data is safe for
-	 * inclusion in an XML document and cannot use a parse, this method provides
-	 * a safe mechanism to do so.
-	 * 
-	 * @see <a href="http://www.w3schools.com/xml/xml_encoding.asp">XML Encoding
-	 *      Standard</a>
-	 * 
-	 * @param input
-	 *            the text to encode for use as an XML attribute
-	 * 
-	 * @return input encoded for use in an XML attribute
+	 * {@inheritDoc}
 	 */
-	String encodeForXMLAttribute(String input);
+	public String encodeForXPath(final String input) {
+		if (input == null) {
+			return null;
+		}
+		return htmlCodec.encode(IMMUNE_XPATH, input);
+	}
 
 	/**
-	 * Encode for use in a URL. This method performs <a
-	 * href="http://en.wikipedia.org/wiki/Percent-encoding">URL encoding</a> on
-	 * the entire string.
-	 * 
-	 * @see <a href="http://en.wikipedia.org/wiki/Percent-encoding">URL
-	 *      encoding</a>
-	 * 
-	 * @param input
-	 *            the text to encode for use in a URL
-	 * 
-	 * @return input encoded for use in a URL
-	 * 
-	 * @throws EncodingException
-	 *             if encoding fails
+	 * {@inheritDoc}
 	 */
-	String encodeForURL(String input) throws EncodingException;
+	public String encodeForXML(final String input) {
+		if (input == null) {
+			return null;
+		}
+		return xmlCodec.encode(IMMUNE_XML, input);
+	}
 
 	/**
-	 * Decode from URL. Implementations should first canonicalize and detect any
-	 * double-encoding. If this check passes, then the data is decoded using URL
-	 * decoding.
-	 * 
-	 * @param input
-	 *            the text to decode from an encoded URL
-	 * 
-	 * @return the decoded URL value
-	 * 
-	 * @throws EncodingException
-	 *             if decoding fails
+	 * {@inheritDoc}
 	 */
-	String decodeFromURL(String input) throws EncodingException;
+	public String encodeForXMLAttribute(final String input) {
+		if (input == null) {
+			return null;
+		}
+		return xmlCodec.encode(IMMUNE_XMLATTR, input);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public String encodeForURL(final String input) throws EncodingException {
+		if (input == null) {
+			return null;
+		}
+		try {
+			return URLEncoder.encode(input, "UTF-8");
+		} catch (UnsupportedEncodingException ex) {
+			throw new EncodingException("Character encoding not supported", ex);
+		} catch (Exception e) {
+			throw new EncodingException("Problem URL encoding input", e);
+		}
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public String decodeFromURL(final String input) throws EncodingException {
+		if (input == null) {
+			return null;
+		}
+		String canonical = canonicalize(input);
+		try {
+			return URLDecoder.decode(canonical, "UTF-8");
+		} catch (UnsupportedEncodingException ex) {
+			throw new EncodingException("Character encoding not supported", ex);
+		} catch (Exception e) {
+			throw new EncodingException("Problem URL decoding input", e);
+		}
+	}
 
 }

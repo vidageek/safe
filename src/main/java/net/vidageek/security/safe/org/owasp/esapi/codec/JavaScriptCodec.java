@@ -15,6 +15,8 @@
  */
 package net.vidageek.security.safe.org.owasp.esapi.codec;
 
+import net.vidageek.security.safe.org.owasp.esapi.util.PushbackString;
+
 
 /**
  * Implementation of the Codec interface for backslash encoding in JavaScript.

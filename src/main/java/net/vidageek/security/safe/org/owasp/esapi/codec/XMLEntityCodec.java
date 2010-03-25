@@ -17,6 +17,8 @@ import java.util.Map;
 import java.util.Set;
 
 import net.vidageek.security.safe.org.owasp.esapi.util.CollectionsUtil;
+import net.vidageek.security.safe.org.owasp.esapi.util.HashTrie;
+import net.vidageek.security.safe.org.owasp.esapi.util.PushbackString;
 
 /**
  * Implementation of the Codec interface for XML entity encoding. This differes

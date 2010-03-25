@@ -19,6 +19,7 @@ import java.io.UnsupportedEncodingException;
 import java.util.Set;
 
 import net.vidageek.security.safe.org.owasp.esapi.util.CollectionsUtil;
+import net.vidageek.security.safe.org.owasp.esapi.util.PushbackString;
 
 /**
  * Implementation of the Codec interface for percent encoding (aka URL
@@ -33,15 +34,12 @@ public class PercentCodec extends Codec {
 	private static final String ALPHA_NUMERIC_STR = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 	@SuppressWarnings("unused")
 	private static final String RFC3986_RESERVED_STR = ":/?#[]@!$&'()*+,;=";
-	private static final String RFC3986_NON_ALPHANUMERIC_UNRESERVED_STR = "-._~";
 	// rfc3986 2.3: For consistency, percent-encoded octets
 	// in the ranges of ALPHA (%41-%5A and %61-%7A), DIGIT
 	// (%30-%39), hyphen (%2D), period (%2E), underscore
 	// (%5F), or tilde (%7E) should not be created by URI
 	// producers
-	private static final boolean ENCODED_NON_ALPHA_NUMERIC_UNRESERVED = true;
-	private static final String UNENCODED_STR = ALPHA_NUMERIC_STR
-			+ (ENCODED_NON_ALPHA_NUMERIC_UNRESERVED ? "" : RFC3986_NON_ALPHANUMERIC_UNRESERVED_STR);
+	private static final String UNENCODED_STR = ALPHA_NUMERIC_STR;
 	private static final Set<Character> UNENCODED_SET = CollectionsUtil.strToUnmodifiableSet(UNENCODED_STR);
 
 	/**

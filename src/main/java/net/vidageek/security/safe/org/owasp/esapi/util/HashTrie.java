@@ -1,4 +1,4 @@
-package net.vidageek.security.safe.org.owasp.esapi.codec;
+package net.vidageek.security.safe.org.owasp.esapi.util;
 
 import java.io.IOException;
 import java.io.PushbackReader;
@@ -9,7 +9,6 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import net.vidageek.security.safe.org.owasp.esapi.util.NullSafe;
 
 /**
  * Trie implementation for CharSequence keys. This uses HashMaps for each level

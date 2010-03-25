@@ -4,7 +4,7 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
 
-import net.vidageek.security.safe.org.owasp.esapi.DefaultEncoder;
+import net.vidageek.security.safe.org.owasp.esapi.Encoder;
 
 /**
  * @author jonasabreu
@@ -16,7 +16,7 @@ final public class SafeSanitizer implements Map<Object, Object> {
 		if (key == null) {
 			return null;
 		}
-		return new Sanitizer(new DefaultEncoder(), key.toString());
+		return new Sanitizer(new Encoder(), key.toString());
 	}
 
 	public boolean isEmpty() {
