@@ -4,8 +4,7 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
 
-
-import org.owasp.esapi.reference.DefaultEncoder;
+import net.vidageek.security.safe.org.owasp.esapi.DefaultEncoder;
 
 /**
  * @author jonasabreu

@@ -1,12 +1,12 @@
 package net.vidageek.security.safe.el;
 
 import static org.mockito.Mockito.verify;
+import net.vidageek.security.safe.org.owasp.esapi.Encoder;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.owasp.esapi.Encoder;
 
 /**
  * @author jonasabreu

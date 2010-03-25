@@ -1,7 +1,7 @@
 package net.vidageek.security.safe.el;
 
-import org.owasp.esapi.Encoder;
-import org.owasp.esapi.errors.EncodingException;
+import net.vidageek.security.safe.org.owasp.esapi.Encoder;
+import net.vidageek.security.safe.org.owasp.esapi.EncodingException;
 
 /**
  * @author jonasabreu
