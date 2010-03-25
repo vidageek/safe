@@ -11,13 +11,13 @@
 
 Test file <br/>
 
-${s[param.idade]}
-${s[param.idade].html}
-${s[param.idade].attr}
-${s[param.idade].url}
-${s[param.idade].css}
-${s[param.idade].js}
-${s[param.idade].vb}
+${s[param.idade]}<br />
+${s[param.idade].html}<br />
+${s[param.idade].attr}<br />
+${s[param.idade].url}<br />
+${s[param.idade].css}<br />
+${s[param.idade].js}<br />
+${s[param.idade].vb}<br />
 
 </body>
 </html>

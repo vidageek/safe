@@ -10,6 +10,11 @@
 
 	<dependencies>
 		<dependency>
+			<groupId>OWASP</groupId>
+			<artifactId>ESAPI</artifactId>
+			<version>2.0-rc5</version>
+		</dependency>
+		<dependency>
 			<groupId>log4j</groupId>
 			<artifactId>log4j</artifactId>
 			<version>1.2.14</version>
@@ -26,7 +31,7 @@
 			<version>2.1</version>
 			<scope>provided</scope>
 		</dependency>
-		
+
 		<!-- Test Scope dependencies -->
 		<dependency>
 			<groupId>junit</groupId>
