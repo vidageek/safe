@@ -54,6 +54,7 @@ public class XMLEntityCodecTest extends TestCase {
 		String expected;
 		String result;
 		int outSbBaseLen = outSb.length();
+		@SuppressWarnings("unused")
 		String out;
 
 		for (int c = Character.MIN_VALUE; c <= Character.MAX_VALUE; c++) {

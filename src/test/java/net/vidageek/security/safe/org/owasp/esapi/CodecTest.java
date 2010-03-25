@@ -34,7 +34,6 @@ public class CodecTest extends TestCase {
 
 	private static final char[] EMPTY_CHAR_ARRAY = new char[0];
 	private static final Character LESS_THAN = Character.valueOf('<');
-	private static final Character SINGLE_QUOTE = Character.valueOf('\'');
 	private final HTMLEntityCodec htmlCodec = new HTMLEntityCodec();
 	private final PercentCodec percentCodec = new PercentCodec();
 	private final JavaScriptCodec javaScriptCodec = new JavaScriptCodec();
@@ -112,10 +111,9 @@ public class CodecTest extends TestCase {
 		String result;
 
 		result = htmlCodec.encodeCharacter(EMPTY_CHAR_ARRAY, in);
-		// this should be escaped
-		assertFalse(inStr.equals(result));
-		// UTF-8 encoded and then percent escaped
-		assertEquals(expected, result);
+		assertFalse("should be escaped", inStr.equals(result));
+
+		assertEquals("UTF-8 encoded and then percent escaped", expected, result);
 	}
 
 	public void testHtmlEncodeStr0x100() {
@@ -196,7 +194,6 @@ public class CodecTest extends TestCase {
 	public void testVBScriptEncodeChar0x100() {
 		char in = 0x100;
 		String inStr = Character.toString(in);
-		// FIXME I don't know vb...
 		// String expected = "\\u0100";
 		String result;
 
@@ -209,7 +206,6 @@ public class CodecTest extends TestCase {
 	public void testVBScriptEncodeStr0x100() {
 		char in = 0x100;
 		String inStr = Character.toString(in);
-		// FIXME I don't know vb...
 		// String expected = "chrw(0x100)";
 		String result;
 

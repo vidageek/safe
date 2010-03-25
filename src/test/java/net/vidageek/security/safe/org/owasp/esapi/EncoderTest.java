@@ -549,6 +549,7 @@ public class EncoderTest extends TestCase {
 		String normal = "The quick brown fox jumped over the lazy dog";
 
 		long start = System.currentTimeMillis();
+		@SuppressWarnings("unused")
 		String temp = null; // Trade in 1/2 doz warnings in Eclipse for one
 		// (never read)
 		for (int i = 0; i < iterations; i++) {

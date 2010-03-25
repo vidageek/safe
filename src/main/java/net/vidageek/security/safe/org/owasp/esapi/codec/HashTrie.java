@@ -95,14 +95,14 @@ public class HashTrie<T> implements Map<CharSequence, T> {
 		/* java.lang.Object */
 		/********************/
 
-		public boolean equals(final Map.Entry other) {
+		public boolean equals(final Map.Entry<?, ?> other) {
 			return (NullSafe.equals(key, other.getKey()) && NullSafe.equals(value, other.getValue()));
 		}
 
 		@Override
 		public boolean equals(final Object o) {
-			if (o instanceof Map.Entry) {
-				return equals((Map.Entry) o);
+			if (o instanceof Map.Entry<?, ?>) {
+				return equals((Map.Entry<?, ?>) o);
 			}
 			return false;
 		}
@@ -194,10 +194,10 @@ public class HashTrie<T> implements Map<CharSequence, T> {
 			ch = key.charAt(pos);
 			if (nextMap == null) {
 				nextMap = newNodeMap();
-				nextNode = new Node();
+				nextNode = new Node<T>();
 				nextMap.put(ch, nextNode);
 			} else if ((nextNode = nextMap.get(ch)) == null) {
-				nextNode = new Node();
+				nextNode = new Node<T>();
 				nextMap.put(ch, nextNode);
 			}
 			return nextNode.put(key, pos + 1, addValue);
@@ -244,9 +244,9 @@ public class HashTrie<T> implements Map<CharSequence, T> {
 				return Entry.newInstanceIfNeeded(key, value);
 			}
 			if ((nextNode = getNextNode(key.charAt(pos))) == null) { // last in
-																		// trie...
-																		// return
-																		// ourselves
+				// trie...
+				// return
+				// ourselves
 				return Entry.newInstanceIfNeeded(key, pos, value);
 			}
 			if ((ret = nextNode.getLongestMatch(key, pos + 1)) != null) {
@@ -283,7 +283,7 @@ public class HashTrie<T> implements Map<CharSequence, T> {
 			key.append(ch);
 
 			if ((nextNode = getNextNode(ch)) == null) { // last in trie...
-														// return ourselves
+				// return ourselves
 				return Entry.newInstanceIfNeeded(key, value);
 			}
 			if ((ret = nextNode.getLongestMatch(keyIn, key)) != null) {
@@ -393,7 +393,7 @@ public class HashTrie<T> implements Map<CharSequence, T> {
 
 			if (value != null) {
 				// MUST toString here
-				entries.add(new Entry(key.toString(), value));
+				entries.add(new Entry<T>(key.toString(), value));
 			}
 			if ((nextMap != null) && (nextMap.size() > 0)) {
 				key.append('X');
@@ -596,11 +596,11 @@ public class HashTrie<T> implements Map<CharSequence, T> {
 		if (other == null) {
 			return false;
 		}
-		if (!(other instanceof Map)) {
+		if (!(other instanceof Map<?, ?>)) {
 			return false;
 		}
 		// per spec
-		return entrySet().equals(((Map) other).entrySet());
+		return entrySet().equals(((Map<?, ?>) other).entrySet());
 	}
 
 	/** {@inheritDoc} */

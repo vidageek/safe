@@ -44,8 +44,7 @@ import org.apache.log4j.Logger;
  */
 public class DefaultEncoder implements Encoder {
 
-	// Codecs
-	private final List codecs = new ArrayList();
+	private final List<Codec> codecs = new ArrayList<Codec>();
 	private final HTMLEntityCodec htmlCodec = new HTMLEntityCodec();
 	private final XMLEntityCodec xmlCodec = new XMLEntityCodec();
 	private final PercentCodec percentCodec = new PercentCodec();
@@ -83,7 +82,7 @@ public class DefaultEncoder implements Encoder {
 				if (clazz.indexOf('.') == -1) {
 					clazz = "net.vidageek.security.safe.org.owasp.esapi.codec." + clazz;
 				}
-				codecs.add(Class.forName(clazz).newInstance());
+				codecs.add((Codec) Class.forName(clazz).newInstance());
 			} catch (Exception e) {
 				logger.warn("Codec " + clazz + " listed in ESAPI.properties not on classpath");
 			}
@@ -117,9 +116,9 @@ public class DefaultEncoder implements Encoder {
 			clean = true;
 
 			// try each codec and keep track of which ones work
-			Iterator i = codecs.iterator();
+			Iterator<Codec> i = codecs.iterator();
 			while (i.hasNext()) {
-				Codec codec = (Codec) i.next();
+				Codec codec = i.next();
 				String old = working;
 				working = codec.decode(working);
 				if (!old.equals(working)) {
