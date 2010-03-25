@@ -17,13 +17,21 @@ package net.vidageek.security.safe.org.owasp.esapi.codec;
 
 import net.vidageek.security.safe.org.owasp.esapi.util.PushbackString;
 
-
 /**
- * The Codec interface defines a set of methods for encoding and decoding application level encoding schemes,
- * such as HTML entity encoding and percent encoding (aka URL encoding). Codecs are used in output encoding
- * and canonicalization.  The design of these codecs allows for character-by-character decoding, which is
- * necessary to detect double-encoding and the use of multiple encoding schemes, both of which are techniques
- * used by attackers to bypass validation and bury encoded attacks in data.
+ * The code of this class was extracted from OWASP Enterprise Security API (ESAPI).
+ * Svn repo: http://owasp-esapi-java.googlecode.com/svn/trunk
+ * Revision: 1222
+ * 
+ * After extraction, modifications were performed by Jonas Abreu (jonas at vidageek dot net) to fit this project's needs
+ */
+/**
+ * The Codec interface defines a set of methods for encoding and decoding
+ * application level encoding schemes, such as HTML entity encoding and percent
+ * encoding (aka URL encoding). Codecs are used in output encoding and
+ * canonicalization. The design of these codecs allows for
+ * character-by-character decoding, which is necessary to detect double-encoding
+ * and the use of multiple encoding schemes, both of which are techniques used
+ * by attackers to bypass validation and bury encoded attacks in data.
  * 
  * @author Jeff Williams (jeff.williams .at. aspectsecurity.com) <a
  *         href="http://www.aspectsecurity.com">Aspect Security</a>
@@ -33,22 +41,21 @@ import net.vidageek.security.safe.org.owasp.esapi.util.PushbackString;
 public abstract class Codec {
 
 	/**
-	 * Initialize an array to mark which characters are to be encoded. Store the hex
-	 * string for that character to save time later. If the character shouldn't be
-	 * encoded, then store null.
+	 * Initialize an array to mark which characters are to be encoded. Store the
+	 * hex string for that character to save time later. If the character
+	 * shouldn't be encoded, then store null.
 	 */
 	private static final String[] hex = new String[256];
 
 	static {
-		for ( char c = 0; c < 0xFF; c++ ) {
-			if ( c >= 0x30 && c <= 0x39 || c >= 0x41 && c <= 0x5A || c >= 0x61 && c <= 0x7A ) {
+		for (char c = 0; c < 0xFF; c++) {
+			if (((c >= 0x30) && (c <= 0x39)) || ((c >= 0x41) && (c <= 0x5A)) || ((c >= 0x61) && (c <= 0x7A))) {
 				hex[c] = null;
 			} else {
 				hex[c] = toHex(c).intern();
 			}
 		}
 	}
-
 
 	/**
 	 * Default constructor
@@ -61,10 +68,10 @@ public abstract class Codec {
 	 * 
 	 * @param immune
 	 * @param input
-	 * 		the String to encode
+	 *            the String to encode
 	 * @return the encoded String
 	 */
-	public String encode(char[] immune, String input) {
+	public String encode(final char[] immune, final String input) {
 		StringBuilder sb = new StringBuilder();
 		for (int i = 0; i < input.length(); i++) {
 			char c = input.charAt(i);
@@ -78,23 +85,21 @@ public abstract class Codec {
 	 * 
 	 * @param immune
 	 * @param c
-	 * 		the Character to encode
-	 * @return
-	 * 		the encoded Character
+	 *            the Character to encode
+	 * @return the encoded Character
 	 */
-	public String encodeCharacter( char[] immune, Character c ) {
-		return ""+c;
+	public String encodeCharacter(final char[] immune, final Character c) {
+		return "" + c;
 	}
 
 	/**
 	 * Decode a String that was encoded using the encode method in this Class
 	 * 
 	 * @param input
-	 * 		the String to decode
-	 * @return
-	 *		the decoded String
+	 *            the String to decode
+	 * @return the decoded String
 	 */
-	public String decode(String input) {
+	public String decode(final String input) {
 		StringBuilder sb = new StringBuilder();
 		PushbackString pbs = new PushbackString(input);
 		while (pbs.hasNext()) {
@@ -109,38 +114,38 @@ public abstract class Codec {
 	}
 
 	/**
-	 * Returns the decoded version of the next character from the input string and advances the
-	 * current character in the PushbackString.  If the current character is not encoded, this 
-	 * method MUST reset the PushbackString.
+	 * Returns the decoded version of the next character from the input string
+	 * and advances the current character in the PushbackString. If the current
+	 * character is not encoded, this method MUST reset the PushbackString.
 	 * 
-	 * @param input	the Character to decode
+	 * @param input
+	 *            the Character to decode
 	 * 
 	 * @return the decoded Character
 	 */
-	public Character decodeCharacter( PushbackString input ) {
+	public Character decodeCharacter(final PushbackString input) {
 		return input.next();
 	}
 
 	/**
 	 * Lookup the hex value of any character that is not alphanumeric.
-	 * @param c The character to lookup.
-	 * @return, return null if alphanumeric or the character code
-	 * 	in hex.
+	 * 
+	 * @param c
+	 *            The character to lookup.
+	 * @return, return null if alphanumeric or the character code in hex.
 	 */
-	public static String getHexForNonAlphanumeric(char c)
-	{
-		if(c<0xFF)
+	public static String getHexForNonAlphanumeric(final char c) {
+		if (c < 0xFF) {
 			return hex[c];
+		}
 		return toHex(c);
 	}
 
-	public static String toOctal(char c)
-	{
+	public static String toOctal(final char c) {
 		return Integer.toOctalString(c);
 	}
 
-	public static String toHex(char c)
-	{
+	public static String toHex(final char c) {
 		return Integer.toHexString(c);
 	}
 
@@ -151,9 +156,11 @@ public abstract class Codec {
 	 * @param array
 	 * @return
 	 */
-	public static boolean containsCharacter( char c, char[] array ) {
+	public static boolean containsCharacter(final char c, final char[] array) {
 		for (char ch : array) {
-			if (c == ch) return true;
+			if (c == ch) {
+				return true;
+			}
 		}
 		return false;
 	}

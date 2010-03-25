@@ -16,6 +16,13 @@
 package net.vidageek.security.safe.org.owasp.esapi;
 
 /**
+ * The code of this class was extracted from OWASP Enterprise Security API (ESAPI).
+ * Svn repo: http://owasp-esapi-java.googlecode.com/svn/trunk
+ * Revision: 1222
+ * 
+ * After extraction, modifications were performed by Jonas Abreu (jonas at vidageek dot net) to fit this project's needs
+ */
+/**
  * An EncryptionException should be thrown for any problems related to
  * encryption, hashing, or digital signatures.
  * 

@@ -22,6 +22,13 @@ import net.vidageek.security.safe.org.owasp.esapi.util.HashTrie;
 import net.vidageek.security.safe.org.owasp.esapi.util.PushbackString;
 
 /**
+ * The code of this class was extracted from OWASP Enterprise Security API (ESAPI).
+ * Svn repo: http://owasp-esapi-java.googlecode.com/svn/trunk
+ * Revision: 1222
+ * 
+ * After extraction, modifications were performed by Jonas Abreu (jonas at vidageek dot net) to fit this project's needs
+ */
+/**
  * Implementation of the Codec interface for HTML entity encoding.
  * 
  * @author Jeff Williams (jeff.williams .at. aspectsecurity.com) <a
@@ -30,244 +37,248 @@ import net.vidageek.security.safe.org.owasp.esapi.util.PushbackString;
  * @see org.owasp.esapi.Encoder
  */
 public class HTMLEntityCodec extends Codec {
-	
-	private static HashMap<Character,String> characterToEntityMap;
+
+	private static HashMap<Character, String> characterToEntityMap;
 
 	private static HashTrie<Character> entityToCharacterMap;
 
 	static {
 		initializeMaps();
 	}
-	
-    /**
+
+	/**
      *
      */
-    public HTMLEntityCodec() {
+	public HTMLEntityCodec() {
 	}
 
 	/**
 	 * {@inheritDoc}
 	 * 
-     * Encodes a Character for safe use in an HTML entity field.
-     * @param immune
-     */
-	public String encodeCharacter( char[] immune, Character c ) {
+	 * Encodes a Character for safe use in an HTML entity field.
+	 * 
+	 * @param immune
+	 */
+	@Override
+	public String encodeCharacter(final char[] immune, final Character c) {
 
 		// check for immune characters
-		if ( containsCharacter(c, immune ) ) {
-			return ""+c;
+		if (containsCharacter(c, immune)) {
+			return "" + c;
 		}
-		
+
 		// check for alphanumeric characters
 		String hex = Codec.getHexForNonAlphanumeric(c);
-		if ( hex == null ) {
-			return ""+c;
+		if (hex == null) {
+			return "" + c;
 		}
-		
+
 		// check for illegal characters
-		if ( ( c <= 0x1f && c != '\t' && c != '\n' && c != '\r' ) || ( c >= 0x7f && c <= 0x9f ) ) {
-			return( " " );
+		if (((c <= 0x1f) && (c != '\t') && (c != '\n') && (c != '\r')) || ((c >= 0x7f) && (c <= 0x9f))) {
+			return (" ");
 		}
-		
+
 		// check if there's a defined entity
-		String entityName = (String) characterToEntityMap.get(c);
+		String entityName = characterToEntityMap.get(c);
 		if (entityName != null) {
 			return "&" + entityName + ";";
 		}
-		
+
 		// return the hex entity as suggested in the spec
 		return "&#x" + hex + ";";
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * Returns the decoded version of the character starting at index, or
-	 * null if no decoding is possible.
+	 * Returns the decoded version of the character starting at index, or null
+	 * if no decoding is possible.
 	 * 
 	 * Formats all are legal both with and without semi-colon, upper/lower case:
-	 *   &#dddd;
-	 *   &#xhhhh;
-	 *   &name;
+	 * &#dddd; &#xhhhh; &name;
 	 */
-	public Character decodeCharacter( PushbackString input ) {
+	@Override
+	public Character decodeCharacter(final PushbackString input) {
 		input.mark();
 		Character first = input.next();
-		if ( first == null ) {
+		if (first == null) {
 			input.reset();
 			return null;
 		}
-		
+
 		// if this is not an encoded character, return null
-		if (first != '&' ) {
+		if (first != '&') {
 			input.reset();
 			return null;
 		}
-		
+
 		// test for numeric encodings
 		Character second = input.next();
-		if ( second == null ) {
+		if (second == null) {
 			input.reset();
 			return null;
 		}
-		
-		if (second == '#' ) {
+
+		if (second == '#') {
 			// handle numbers
-			Character c = getNumericEntity( input );
-			if ( c != null ) return c;
-		} else if ( Character.isLetter( second.charValue() ) ) {
+			Character c = getNumericEntity(input);
+			if (c != null) {
+				return c;
+			}
+		} else if (Character.isLetter(second.charValue())) {
 			// handle entities
-			input.pushback( second );
-			Character c = getNamedEntity( input );
-			if ( c != null ) return c;
+			input.pushback(second);
+			Character c = getNamedEntity(input);
+			if (c != null) {
+				return c;
+			}
 		}
 		input.reset();
 		return null;
 	}
-	
+
 	/**
 	 * getNumericEntry checks input to see if it is a numeric entity
 	 * 
 	 * @param input
-	 * 			The input to test for being a numeric entity
-	 *  
-	 * @return
-	 * 			null if input is null, the character of input after decoding
+	 *            The input to test for being a numeric entity
+	 * 
+	 * @return null if input is null, the character of input after decoding
 	 */
-	private Character getNumericEntity( PushbackString input ) {
+	private Character getNumericEntity(final PushbackString input) {
 		Character first = input.peek();
-		if ( first == null ) return null;
-
-		if (first == 'x' || first == 'X' ) {
-			input.next();
-			return parseHex( input );
+		if (first == null) {
+			return null;
 		}
-		return parseNumber( input );
+
+		if ((first == 'x') || (first == 'X')) {
+			input.next();
+			return parseHex(input);
+		}
+		return parseNumber(input);
 	}
 
 	/**
-	 * Parse a decimal number, such as those from JavaScript's String.fromCharCode(value)
+	 * Parse a decimal number, such as those from JavaScript's
+	 * String.fromCharCode(value)
 	 * 
 	 * @param input
-	 * 			decimal encoded string, such as 65
-	 * @return
-	 * 			character representation of this decimal value, e.g. A 
+	 *            decimal encoded string, such as 65
+	 * @return character representation of this decimal value, e.g. A
 	 * @throws NumberFormatException
 	 */
-	private Character parseNumber( PushbackString input ) {
+	private Character parseNumber(final PushbackString input) {
 		StringBuilder sb = new StringBuilder();
-		while( input.hasNext() ) {
+		while (input.hasNext()) {
 			Character c = input.peek();
-			
+
 			// if character is a digit then add it on and keep going
-			if ( Character.isDigit( c.charValue() ) ) {
-				sb.append( c );
+			if (Character.isDigit(c.charValue())) {
+				sb.append(c);
 				input.next();
-				
-			// if character is a semi-colon, eat it and quit
-			} else if (c == ';' ) {
+
+				// if character is a semi-colon, eat it and quit
+			} else if (c == ';') {
 				input.next();
 				break;
-				
-			// otherwise just quit
+
+				// otherwise just quit
 			} else {
 				break;
 			}
 		}
 		try {
 			int i = Integer.parseInt(sb.toString());
-            if (Character.isValidCodePoint(i)) {
-                return (char) i;
-            }
-		} catch( NumberFormatException e ) {
+			if (Character.isValidCodePoint(i)) {
+				return (char) i;
+			}
+		} catch (NumberFormatException e) {
 			// throw an exception for malformed entity?
 		}
-			return null;
-		}
-	
+		return null;
+	}
+
 	/**
 	 * Parse a hex encoded entity
 	 * 
 	 * @param input
-	 * 			Hex encoded input (such as 437ae;)
-	 * @return
-	 * 			A single character from the string
+	 *            Hex encoded input (such as 437ae;)
+	 * @return A single character from the string
 	 * @throws NumberFormatException
 	 */
-	private Character parseHex( PushbackString input ) {
+	private Character parseHex(final PushbackString input) {
 		StringBuilder sb = new StringBuilder();
-		while( input.hasNext() ) {
+		while (input.hasNext()) {
 			Character c = input.peek();
-			
+
 			// if character is a hex digit then add it on and keep going
-			if ( "0123456789ABCDEFabcdef".indexOf(c) != -1 ) {
-				sb.append( c );
+			if ("0123456789ABCDEFabcdef".indexOf(c) != -1) {
+				sb.append(c);
 				input.next();
-				
-			// if character is a semi-colon, eat it and quit
-			} else if (c == ';' ) {
+
+				// if character is a semi-colon, eat it and quit
+			} else if (c == ';') {
 				input.next();
 				break;
-				
-			// otherwise just quit
+
+				// otherwise just quit
 			} else {
 				break;
 			}
 		}
 		try {
 			int i = Integer.parseInt(sb.toString(), 16);
-            if (Character.isValidCodePoint(i)) {
-                return (char) i;
-            }
-		} catch( NumberFormatException e ) {
+			if (Character.isValidCodePoint(i)) {
+				return (char) i;
+			}
+		} catch (NumberFormatException e) {
 			// throw an exception for malformed entity?
 		}
-			return null;
-		}
-	
+		return null;
+	}
+
 	/**
 	 * 
-	 * Returns the decoded version of the character starting at index, or
-	 * null if no decoding is possible.
+	 * Returns the decoded version of the character starting at index, or null
+	 * if no decoding is possible.
 	 * 
 	 * Formats all are legal both with and without semi-colon, upper/lower case:
-	 *   &aa;
-	 *   &aaa;
-	 *   &aaaa;
-	 *   &aaaaa;
-	 *   &aaaaaa;
-	 *   &aaaaaaa;
-	 *
+	 * &aa; &aaa; &aaaa; &aaaaa; &aaaaaa; &aaaaaaa;
+	 * 
 	 * @param input
-	 * 		A string containing a named entity like &quot;
-	 * @return
-	 * 		Returns the decoded version of the character starting at index, or null if no decoding is possible.
+	 *            A string containing a named entity like &quot;
+	 * @return Returns the decoded version of the character starting at index,
+	 *         or null if no decoding is possible.
 	 */
-	private Character getNamedEntity( PushbackString input ) {
+	private Character getNamedEntity(final PushbackString input) {
 		StringBuilder possible = new StringBuilder();
-		Map.Entry<CharSequence,Character> entry;
+		Map.Entry<CharSequence, Character> entry;
 		int len;
-		
+
 		// kludge around PushbackString....
 		len = Math.min(input.remainder().length(), entityToCharacterMap.getMaxKeyLength());
-		for(int i=0;i<len;i++)
+		for (int i = 0; i < len; i++) {
 			possible.append(Character.toLowerCase(input.next()));
+		}
 
 		// look up the longest match
 		entry = entityToCharacterMap.getLongestMatch(possible);
-		if(entry == null)
-			return null;	// no match, caller will reset input
+		if (entry == null) {
+			return null; // no match, caller will reset input
+		}
 
 		// fixup input
 		input.reset();
-		input.next();	// read &
-		len = entry.getKey().length();	// what matched's length
-		for(int i=0;i<len;i++)
+		input.next(); // read &
+		len = entry.getKey().length(); // what matched's length
+		for (int i = 0; i < len; i++) {
 			input.next();
+		}
 
 		// check for a trailing semicolen
-		if(input.peek(';'))
+		if (input.peek(';')) {
 			input.next();
+		}
 
 		return entry.getValue();
 	}
@@ -783,7 +794,7 @@ public class HTMLEntityCodec extends Codec {
 		/* &clubs; : black club suit */, 9829
 		/* &hearts; : black heart suit */, 9830
 		/* &diams; : black diamond suit */, };
-		characterToEntityMap = new HashMap<Character,String>(entityNames.length);
+		characterToEntityMap = new HashMap<Character, String>(entityNames.length);
 		entityToCharacterMap = new HashTrie<Character>();
 		for (int i = 0; i < entityNames.length; i++) {
 			String e = entityNames[i];
@@ -792,5 +803,5 @@ public class HTMLEntityCodec extends Codec {
 			characterToEntityMap.put(c, e);
 		}
 	}
-	
+
 }

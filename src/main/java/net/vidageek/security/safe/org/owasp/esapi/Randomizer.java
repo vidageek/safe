@@ -18,6 +18,13 @@ package net.vidageek.security.safe.org.owasp.esapi;
 import java.security.SecureRandom;
 
 /**
+ * The code of this class was extracted from OWASP Enterprise Security API (ESAPI).
+ * Svn repo: http://owasp-esapi-java.googlecode.com/svn/trunk
+ * Revision: 1222
+ * 
+ * After extraction, modifications were performed by Jonas Abreu (jonas at vidageek dot net) to fit this project's needs
+ */
+/**
  * Reference implementation of the Randomizer interface. This implementation
  * builds on the JCE provider to provide a cryptographically strong source of
  * entropy. The specific algorithm used is configurable in ESAPI.properties.

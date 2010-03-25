@@ -8,6 +8,13 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
+ * The code of this class was extracted from OWASP Enterprise Security API (ESAPI).
+ * Svn repo: http://owasp-esapi-java.googlecode.com/svn/trunk
+ * Revision: 1222
+ * 
+ * After extraction, modifications were performed by Jonas Abreu (jonas at vidageek dot net) to fit this project's needs
+ */
+/**
  * @author Neil Matatall (neil.matatall .at. gmail.com)
  * 
  *         Are these necessary? Are there any libraries or java.lang classes to

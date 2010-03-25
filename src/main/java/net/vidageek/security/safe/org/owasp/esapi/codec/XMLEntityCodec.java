@@ -21,6 +21,13 @@ import net.vidageek.security.safe.org.owasp.esapi.util.HashTrie;
 import net.vidageek.security.safe.org.owasp.esapi.util.PushbackString;
 
 /**
+ * The code of this class was extracted from OWASP Enterprise Security API (ESAPI).
+ * Svn repo: http://owasp-esapi-java.googlecode.com/svn/trunk
+ * Revision: 1222
+ * 
+ * After extraction, modifications were performed by Jonas Abreu (jonas at vidageek dot net) to fit this project's needs
+ */
+/**
  * Implementation of the Codec interface for XML entity encoding. This differes
  * from HTML entity encoding in that only the following named entities are
  * predefined:
@@ -121,7 +128,7 @@ public class XMLEntityCodec extends Codec {
 			if (second == '#') { // handle numbers
 				ret = getNumericEntity(input);
 			} else if (Character.isLetter(second.charValue())) { // handle
-																	// entities
+				// entities
 				input.pushback(second);
 				ret = getNamedEntity(input);
 			}

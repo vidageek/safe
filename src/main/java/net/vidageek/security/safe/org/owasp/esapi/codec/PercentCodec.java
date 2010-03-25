@@ -22,6 +22,13 @@ import net.vidageek.security.safe.org.owasp.esapi.util.CollectionsUtil;
 import net.vidageek.security.safe.org.owasp.esapi.util.PushbackString;
 
 /**
+ * The code of this class was extracted from OWASP Enterprise Security API (ESAPI).
+ * Svn repo: http://owasp-esapi-java.googlecode.com/svn/trunk
+ * Revision: 1222
+ * 
+ * After extraction, modifications were performed by Jonas Abreu (jonas at vidageek dot net) to fit this project's needs
+ */
+/**
  * Implementation of the Codec interface for percent encoding (aka URL
  * encoding).
  * 

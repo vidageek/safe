@@ -1,6 +1,13 @@
 package net.vidageek.security.safe.org.owasp.esapi.util;
 
 /**
+ * The code of this class was extracted from OWASP Enterprise Security API (ESAPI).
+ * Svn repo: http://owasp-esapi-java.googlecode.com/svn/trunk
+ * Revision: 1222
+ * 
+ * After extraction, modifications were performed by Jonas Abreu (jonas at vidageek dot net) to fit this project's needs
+ */
+/**
  * Common character classes used for input validation, output encoding,
  * verifying password strength CSRF token generation, generating salts, etc
  * 

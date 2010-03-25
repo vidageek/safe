@@ -16,6 +16,13 @@
 package net.vidageek.security.safe.org.owasp.esapi.util;
 
 /**
+ * The code of this class was extracted from OWASP Enterprise Security API (ESAPI).
+ * Svn repo: http://owasp-esapi-java.googlecode.com/svn/trunk
+ * Revision: 1222
+ * 
+ * After extraction, modifications were performed by Jonas Abreu (jonas at vidageek dot net) to fit this project's needs
+ */
+/**
  * The pushback string is used by Codecs to allow them to push decoded
  * characters back onto a string for further decoding. This is necessary to
  * detect double-encoding.

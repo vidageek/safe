@@ -34,6 +34,14 @@ import net.vidageek.security.safe.org.owasp.esapi.codec.XMLEntityCodec;
 import org.apache.log4j.Logger;
 
 /**
+ * The code of this class was extracted from OWASP Enterprise Security API (ESAPI).
+ * Svn repo: http://owasp-esapi-java.googlecode.com/svn/trunk
+ * Revision: 1222
+ * 
+ * After extraction, modifications were performed by Jonas Abreu (jonas at vidageek dot net) to fit this project's needs
+ */
+
+/**
  * Reference implementation of the Encoder interface. This implementation takes
  * a whitelist approach to encoding, meaning that everything not specifically
  * identified in a list of "immune" characters is encoded.
