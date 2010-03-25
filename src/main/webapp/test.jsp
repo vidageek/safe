@@ -12,6 +12,7 @@
 Test file <br/>
 
 ${s[param.idade]}<br />
+${s['&atilde;']}<br />
 ${s[param.idade].html}<br />
 ${s[param.idade].attr}<br />
 ${s[param.idade].url}<br />
