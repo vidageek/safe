@@ -65,8 +65,6 @@ public class DefaultEncoder implements Encoder {
 	private final static char[] IMMUNE_JAVASCRIPT = { ',', '.', '_' };
 	private final static char[] IMMUNE_VBSCRIPT = { ',', '.', '_' };
 	private final static char[] IMMUNE_XML = { ',', '.', '-', '_', ' ' };
-	private final static char[] IMMUNE_SQL = { ' ' };
-	private final static char[] IMMUNE_OS = { '-' };
 	private final static char[] IMMUNE_XMLATTR = { ',', '.', '-', '_' };
 	private final static char[] IMMUNE_XPATH = { ',', '.', '-', '_', ' ' };
 
@@ -83,7 +81,7 @@ public class DefaultEncoder implements Encoder {
 		for (String clazz : codecNames) {
 			try {
 				if (clazz.indexOf('.') == -1) {
-					clazz = "org.owasp.esapi.codecs." + clazz;
+					clazz = "net.vidageek.security.safe.org.owasp.esapi.codec." + clazz;
 				}
 				codecs.add(Class.forName(clazz).newInstance());
 			} catch (Exception e) {
@@ -222,107 +220,6 @@ public class DefaultEncoder implements Encoder {
 			return null;
 		}
 		return vbScriptCodec.encode(IMMUNE_VBSCRIPT, input);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public String encodeForSQL(final Codec codec, final String input) {
-		if (input == null) {
-			return null;
-		}
-		return codec.encode(IMMUNE_SQL, input);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public String encodeForOS(final Codec codec, final String input) {
-		if (input == null) {
-			return null;
-		}
-		return codec.encode(IMMUNE_OS, input);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public String encodeForLDAP(final String input) {
-		if (input == null) {
-			return null;
-		}
-		// TODO: replace with LDAP codec
-		StringBuilder sb = new StringBuilder();
-		for (int i = 0; i < input.length(); i++) {
-			char c = input.charAt(i);
-			switch (c) {
-			case '\\':
-				sb.append("\\5c");
-				break;
-			case '*':
-				sb.append("\\2a");
-				break;
-			case '(':
-				sb.append("\\28");
-				break;
-			case ')':
-				sb.append("\\29");
-				break;
-			case '\0':
-				sb.append("\\00");
-				break;
-			default:
-				sb.append(c);
-			}
-		}
-		return sb.toString();
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public String encodeForDN(final String input) {
-		if (input == null) {
-			return null;
-		}
-		// TODO: replace with DN codec
-		StringBuilder sb = new StringBuilder();
-		if ((input.length() > 0) && ((input.charAt(0) == ' ') || (input.charAt(0) == '#'))) {
-			sb.append('\\'); // add the leading backslash if needed
-		}
-		for (int i = 0; i < input.length(); i++) {
-			char c = input.charAt(i);
-			switch (c) {
-			case '\\':
-				sb.append("\\\\");
-				break;
-			case ',':
-				sb.append("\\,");
-				break;
-			case '+':
-				sb.append("\\+");
-				break;
-			case '"':
-				sb.append("\\\"");
-				break;
-			case '<':
-				sb.append("\\<");
-				break;
-			case '>':
-				sb.append("\\>");
-				break;
-			case ';':
-				sb.append("\\;");
-				break;
-			default:
-				sb.append(c);
-			}
-		}
-		// add the trailing backslash if needed
-		if ((input.length() > 1) && (input.charAt(input.length() - 1) == ' ')) {
-			sb.insert(sb.length() - 1, '\\');
-		}
-		return sb.toString();
 	}
 
 	/**

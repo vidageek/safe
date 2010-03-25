@@ -80,7 +80,7 @@ public class EncoderTest extends TestCase {
 		ArrayList<String> list = new ArrayList<String>();
 		list.add("HTMLEntityCodec");
 		list.add("PercentCodec");
-		Encoder instance = new DefaultEncoder(list);
+		DefaultEncoder instance = new DefaultEncoder(list);
 
 		// Test null paths
 		assertEquals(null, instance.canonicalize(null));
