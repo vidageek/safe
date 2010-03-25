@@ -23,7 +23,7 @@ final public class Sanitizer {
 	}
 
 	public String getHtml() {
-		return encoder.encodeForHTML(suspectContent);
+		return encoder.encodeForHTML(encoder.canonicalize(suspectContent));
 	}
 
 	public String getCss() {

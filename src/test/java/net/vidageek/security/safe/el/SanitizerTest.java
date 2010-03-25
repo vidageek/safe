@@ -1,6 +1,8 @@
 package net.vidageek.security.safe.el;
 
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import junit.framework.Assert;
 import net.vidageek.security.safe.org.owasp.esapi.Encoder;
 
 import org.junit.Before;
@@ -25,14 +27,22 @@ final public class SanitizerTest {
 
 	@Test
 	public void testThatDefaultSanitarizationIsHtml() {
+		when(encoder.canonicalize("string")).thenReturn("string");
+
 		String res = new Sanitizer(encoder, "string").toString();
+
 		verify(encoder).encodeForHTML("string");
+		verify(encoder).canonicalize("string");
 	}
 
 	@Test
 	public void testThatHtmlSanitarizationIsHtml() {
+		when(encoder.canonicalize("string")).thenReturn("string");
+
 		String res = new Sanitizer(encoder, "string").getHtml();
+
 		verify(encoder).encodeForHTML("string");
+		verify(encoder).canonicalize("string");
 	}
 
 	@Test
@@ -63,5 +73,10 @@ final public class SanitizerTest {
 	public void testThatUrlSanitarizationIsUrl() throws Throwable {
 		String res = new Sanitizer(encoder, "string").getUrl();
 		verify(encoder).encodeForURL("string");
+	}
+
+	@Test
+	public void testThatDoesNotRencodeHtmlEntities() {
+		Assert.assertEquals("&atilde;", new Sanitizer(new Encoder(), "&atilde;").getHtml());
 	}
 }
