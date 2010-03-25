@@ -4,58 +4,63 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
 
+import org.owasp.esapi.reference.DefaultEncoder;
+
 /**
  * @author jonasabreu
  * 
  */
 final public class SafeSanitizer implements Map<Object, Object> {
 
-    public Object get(final Object key) {
-        return "It work's! " + key.toString();
-    }
+	public Sanitizer get(final Object key) {
+		if (key == null) {
+			return null;
+		}
+		return new Sanitizer(new DefaultEncoder(), key.toString());
+	}
 
-    public boolean isEmpty() {
-        return false;
-    }
+	public boolean isEmpty() {
+		return false;
+	}
 
-    // Methods to make the compiler happy
+	// Methods to make the compiler happy
 
-    public void clear() {
-    }
+	public void clear() {
+	}
 
-    public boolean containsKey(final Object key) {
-        return false;
-    }
+	public boolean containsKey(final Object key) {
+		return true;
+	}
 
-    public boolean containsValue(final Object value) {
-        return false;
-    }
+	public boolean containsValue(final Object value) {
+		return true;
+	}
 
-    public Set<java.util.Map.Entry<Object, Object>> entrySet() {
-        return null;
-    }
+	public Set<java.util.Map.Entry<Object, Object>> entrySet() {
+		return null;
+	}
 
-    public Set<Object> keySet() {
-        return null;
-    }
+	public Set<Object> keySet() {
+		return null;
+	}
 
-    public Object put(final Object key, final Object value) {
-        return null;
-    }
+	public Object put(final Object key, final Object value) {
+		return null;
+	}
 
-    public void putAll(final Map<? extends Object, ? extends Object> m) {
-    }
+	public void putAll(final Map<? extends Object, ? extends Object> m) {
+	}
 
-    public Object remove(final Object key) {
-        return null;
-    }
+	public Object remove(final Object key) {
+		return null;
+	}
 
-    public int size() {
-        return 0;
-    }
+	public int size() {
+		return 1;
+	}
 
-    public Collection<Object> values() {
-        return null;
-    }
+	public Collection<Object> values() {
+		return null;
+	}
 
 }

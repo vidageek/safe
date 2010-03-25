@@ -10,12 +10,12 @@ import javax.servlet.ServletContextListener;
  */
 final public class SafeContextListener implements ServletContextListener {
 
-    public void contextInitialized(final ServletContextEvent sce) {
-        ServletContext context = sce.getServletContext();
-        context.setAttribute("safe", new SafeSanitizer());
-    }
+	public void contextInitialized(final ServletContextEvent sce) {
+		ServletContext context = sce.getServletContext();
+		context.setAttribute("s", new SafeSanitizer());
+	}
 
-    public void contextDestroyed(final ServletContextEvent sce) {
-    }
+	public void contextDestroyed(final ServletContextEvent sce) {
+	}
 
 }
