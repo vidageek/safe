@@ -11,6 +11,14 @@ import junit.framework.TestCase;
 import junit.framework.TestSuite;
 import net.vidageek.security.safe.org.owasp.esapi.util.HashTrie;
 
+/**
+ * The code of this class was extracted from OWASP Enterprise Security API
+ * (ESAPI). Svn repo: http://owasp-esapi-java.googlecode.com/svn/trunk Revision:
+ * 1222
+ * 
+ * After extraction, modifications were performed by Jonas Abreu (jonas at
+ * vidageek dot net) to fit this project's needs
+ */
 public class HashTrieTest extends TestCase {
 	private static final Class<HashTrieTest> CLASS = HashTrieTest.class;
 

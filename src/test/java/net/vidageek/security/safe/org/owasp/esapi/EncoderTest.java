@@ -27,6 +27,13 @@ import net.vidageek.security.safe.org.owasp.esapi.codec.PercentCodec;
 import net.vidageek.security.safe.org.owasp.esapi.util.EncoderConstants;
 
 /**
+ * The code of this class was extracted from OWASP Enterprise Security API (ESAPI).
+ * Svn repo: http://owasp-esapi-java.googlecode.com/svn/trunk
+ * Revision: 1222
+ * 
+ * After extraction, modifications were performed by Jonas Abreu (jonas at vidageek dot net) to fit this project's needs
+ */
+/**
  * The Class EncoderTest.
  * 
  * @author Jeff Williams (jeff.williams@aspectsecurity.com)

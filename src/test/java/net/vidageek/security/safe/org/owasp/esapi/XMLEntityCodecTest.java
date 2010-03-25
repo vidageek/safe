@@ -19,6 +19,14 @@ import junit.framework.TestCase;
 import net.vidageek.security.safe.org.owasp.esapi.codec.XMLEntityCodec;
 import net.vidageek.security.safe.org.owasp.esapi.util.CollectionsUtil;
 
+/**
+ * The code of this class was extracted from OWASP Enterprise Security API
+ * (ESAPI). Svn repo: http://owasp-esapi-java.googlecode.com/svn/trunk Revision:
+ * 1222
+ * 
+ * After extraction, modifications were performed by Jonas Abreu (jonas at
+ * vidageek dot net) to fit this project's needs
+ */
 public class XMLEntityCodecTest extends TestCase {
 	private static final char[] EMPTY_CHAR_ARRAY = new char[0];
 	private static final String ALPHA_NUMERIC_STR = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
