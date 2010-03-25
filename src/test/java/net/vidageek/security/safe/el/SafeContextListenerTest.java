@@ -18,24 +18,24 @@ import org.mockito.MockitoAnnotations;
  */
 final public class SafeContextListenerTest {
 
-    @Mock
-    private ServletContextEvent event;
+	@Mock
+	private ServletContextEvent event;
 
-    @Mock
-    private ServletContext context;
+	@Mock
+	private ServletContext context;
 
-    @Before
-    public void setup() {
-        MockitoAnnotations.initMocks(this);
-        when(event.getServletContext()).thenReturn(context);
-    }
+	@Before
+	public void setup() {
+		MockitoAnnotations.initMocks(this);
+		when(event.getServletContext()).thenReturn(context);
+	}
 
-    @Test
-    public void testThatRegisterSafeAttributeCleaner() {
-        new SafeContextListener().contextInitialized(event);
+	@Test
+	public void testThatRegisterSafeAttributeCleaner() {
+		new SafeContextListener().contextInitialized(event);
 
-        verify(context).setAttribute(Mockito.eq("safe"), Mockito.any(SafeSanitizer.class));
+		verify(context).setAttribute(Mockito.eq("s"), Mockito.any(SafeSanitizer.class));
 
-    }
+	}
 
 }

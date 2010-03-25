@@ -11,7 +11,13 @@
 
 Test file <br/>
 
-${safe[param.idade]}
+${s[param.idade]}
+${s[param.idade].html}
+${s[param.idade].attr}
+${s[param.idade].url}
+${s[param.idade].css}
+${s[param.idade].js}
+${s[param.idade].vb}
 
 </body>
 </html>
